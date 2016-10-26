@@ -64,15 +64,16 @@ Installation
    Then, use MongoDB's `db.collection.ensureIndex()` method to add
    the indexes, as in the following:
 
-   ```
-   $ mongo
-   > use xhprof
-   > db.results.ensureIndex( { 'meta.SERVER.REQUEST_TIME' : -1 } )
-   > db.results.ensureIndex( { 'profile.main().wt' : -1 } )
-   > db.results.ensureIndex( { 'profile.main().mu' : -1 } )
-   > db.results.ensureIndex( { 'profile.main().cpu' : -1 } )
-   > db.results.ensureIndex( { 'meta.url' : 1 } )
-   ```
+```
+$ mongo
+use xhprof
+db.results.ensureIndex( { 'meta.SERVER.HTTP_HOST' : 1 } )
+db.results.ensureIndex( { 'meta.SERVER.REQUEST_TIME' : -1 } )
+db.results.ensureIndex( { 'profile.main().wt' : -1 } )
+db.results.ensureIndex( { 'profile.main().mu' : -1 } )
+db.results.ensureIndex( { 'profile.main().cpu' : -1 } )
+db.results.ensureIndex( { 'meta.url' : 1 } )
+```
 
 7. Run XHGui's install script. The install script downloads composer and
    uses it to install the XHGui's dependencies.
