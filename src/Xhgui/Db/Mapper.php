@@ -62,6 +62,9 @@ class Xhgui_Db_Mapper
         if (!empty($search['request_end'])) {
             $conditions['meta.SERVER.REQUEST_TIME']['$lte'] = $this->_convertDate($search['request_end']);
         }
+        if (!empty($search['host'])) {
+            $conditions['meta.SERVER.HTTP_HOST'] = (string)$search['host'];
+        }
 
         if (!empty($search['remote_addr'])) {
             $conditions['meta.SERVER.REMOTE_ADDR'] = (string)$search['remote_addr'];
