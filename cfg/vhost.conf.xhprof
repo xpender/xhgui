@@ -1,0 +1,13 @@
+<VirtualHost 0.0.0.0>
+    ServerName xhprof
+    ServerAlias xhprof.eu-central-1.whowsrv.net xhprof.eu-fra-1.whowsrv.net
+    DocumentRoot WhAppRoot/webroot/
+    WhCommon
+    WhDefaultCache
+
+    <Location />
+        RewriteEngine On
+        RewriteCond %{REQUEST_FILENAME} !-f
+        RewriteRule ^ index.php [QSA,L]
+    </Location>
+</VirtualHost>
