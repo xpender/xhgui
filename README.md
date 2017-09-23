@@ -306,7 +306,7 @@ seconds) old.
 ```
 $ mongo
 > use xhprof
-db.results.ensureIndex( { "meta.request_ts" : 1 }, { expireAfterSeconds : 432000 } )
+db.results.ensureIndex( { "meta.request_ts" : 1 }, { expireAfterSeconds : 259200 } )
 ```
 
 Waterfall Display
