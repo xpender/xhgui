@@ -19,14 +19,13 @@ System Requirements
 
 XHGui has the following requirements:
 
- * [XHProf](http://pecl.php.net/package/xhprof),
+ * PHP version 5.5 or later.
+ * [MongoDB Extension](http://pecl.php.net/package/mongo) MongoDB PHP driver.
+   XHGui requires verison 1.3.0 or later.
+ * [MongoDB](http://www.mongodb.org/) MongoDB Itself. XHGui requires version 2.2.0 or later.
+ * One of [XHProf](http://pecl.php.net/package/xhprof),
    [Uprofiler](https://github.com/FriendsOfPHP/uprofiler) or
    [Tideways](https://github.com/tideways/php-profiler-extension) to actually profile the data.
- * [MongoDB PHP](http://pecl.php.net/package/mongo) MongoDB PHP driver.
-   XHGui requires verison 1.3.0 or later.
- * [MongoDB](http://www.mongodb.org/) MongoDB Itself.
- * [mcrypt](http://php.net/manual/en/book.mcrypt.php) PHP must be configured
-   with mcrypt (which is a dependency of Slim).
  * [dom](http://php.net/manual/en/book.dom.php) If you are running the tests
    you'll need the DOM extension (which is a dependency of PHPUnit).
 
@@ -43,7 +42,7 @@ Installation
 
    The following command changes the permissions for the `cache` directory:
 
-   ```
+   ```bash
    chmod -R 0777 cache
    ```
 
@@ -73,12 +72,13 @@ db.results.ensureIndex( { 'profile.main().wt' : -1 } )
 db.results.ensureIndex( { 'profile.main().mu' : -1 } )
 db.results.ensureIndex( { 'profile.main().cpu' : -1 } )
 db.results.ensureIndex( { 'meta.url' : 1 } )
+db.results.ensureIndex( { 'meta.simple_url' : 1 } )
 ```
 
 7. Run XHGui's install script. The install script downloads composer and
    uses it to install the XHGui's dependencies.
 
-   ```
+   ```bash
    cd path/to/xhgui
    php install.php
    ```
@@ -95,21 +95,21 @@ Configure Webserver Re-Write Rules
 XHGui prefers to have URL rewriting enabled, but will work without it.
 For Apache, you can do the following to enable URL rewriting:
 
-1. Make sure that an .htaccess override is allowed and that AllowOverride is
-   set to All for the correct DocumentRoot.
+1. Make sure that an .htaccess override is allowed and that AllowOverride
+   has the directive FileInfo set for the correct DocumentRoot.
 
     Example configuration for Apache 2.4:
-    ```
+    ```apache
     <Directory /var/www/xhgui/>
         Options Indexes FollowSymLinks
-        AllowOverride All
+        AllowOverride FileInfo
         Require all granted
     </Directory>
     ```
 2. Make sure you are loading up mod_rewrite correctly.
    You should see something like:
 
-    ```
+    ```apache
     LoadModule rewrite_module libexec/apache2/mod_rewrite.so
     ```
 
@@ -117,7 +117,7 @@ For Apache, you can do the following to enable URL rewriting:
 
 For nginx and fast-cgi, you can the following snippet as a start:
 
-```
+```nginx
 server {
     listen   80;
     server_name example.com;
@@ -127,7 +127,7 @@ server {
     index  index.php;
 
     location / {
-        try_files $uri $uri/ /index.php?$uri&$args;
+        try_files $uri $uri/ /index.php?$args;
     }
 
     location ~ \.php$ {
@@ -164,7 +164,7 @@ return array(
         if (strpos($url, '/blog') === 0) {
             return false;
         }
-        return rand(0, 100) === 42;
+        return rand(1, 100) === 42;
     }
 );
 ```
@@ -205,6 +205,23 @@ return array(
 
 The URL argument is the `REQUEST_URI` or `argv` value.
 
+Configure ignored functions
+---------------------------
+
+You can use the `profiler.options` configuration value to set additional options
+for the profiler extension. This is useful when you want to exclude specific
+functions from your profiler data:
+
+```php
+// In config/config.php
+return array(
+    //Other config
+    'profiler.options' => [
+        'ignored_functions' => ['call_user_func', 'call_user_func_array']
+    ]
+);
+```
+
 
 Profile an Application or Site
 ==============================
@@ -219,7 +236,7 @@ virtual host.
 
 With apache this would look like:
 
-```
+```apache
 <VirtualHost *:80>
   php_admin_value auto_prepend_file "/Users/markstory/Sites/xhgui/external/header.php"
   DocumentRoot "/Users/markstory/Sites/awesome-thing/app/webroot/"
@@ -228,7 +245,7 @@ With apache this would look like:
 ```
 With Nginx in fastcgi mode you could use:
 
-```
+```nginx
 server {
   listen 80;
   server_name site.localhost;
@@ -255,7 +272,7 @@ require '/path/to/xhgui/external/header.php';
 
 You can alternatively use the `-d` flag when running php:
 
-```
+```bash
 php -d auto_prepend_file=/path/to/xhgui/external/header.php do_work.php
 ```
 
@@ -279,7 +296,7 @@ during the import.
 
 The following demonstrate the use of `external/import.php`:
 
-```
+```bash
 php external/import.php -f /path/to/file
 ```
 
@@ -326,6 +343,19 @@ Some Notes:
    granularity doesn't work well with waterfalls.
  * The waterfall display is still very much in alpha.
  * Feedback and pull requests are welcome :)
+
+Using Tideways Extension
+========================
+
+The XHProf PHP extension is not compatible with PHP7.0+. Instead you'll need to
+use the [tideways_xhprof extension](https://github.com/tideways/php-profiler-extension).
+
+Once installed, you can use the following configuration data:
+
+```ini
+[tideways_xhprof]
+extension="/path/to/tideways/tideways_xhprof.so"
+```
 
 Releases / Changelog
 ====================

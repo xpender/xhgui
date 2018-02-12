@@ -75,8 +75,7 @@ class Xhgui_ServiceContainer extends Pimple
                 $config['db.options'] = array();
             }
             $mongo = new MongoClient($config['db.host'], $config['db.options']);
-            $x = $config['db.db'];
-            $mongo->$x->results->findOne();
+            $mongo->{$config['db.db']}->results->findOne();
 
             return $mongo->{$config['db.db']};
         });
